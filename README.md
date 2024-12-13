@@ -48,3 +48,11 @@ CREATE UNIQUE INDEX index_contacts_email ON contacts(email);
 ```
 
 Make a graph for the new result. Does it match what you would expect ?
+
+| size         | time (in ms) |
+|--------------|--------------|
+| 100,000      | 0.908        |
+| 1,000,000    | 2.316        |
+| 2,000,000    | 4.213        |
+| 5,000,000    | 9.610        |
+| 10,000,000   | 17.832       |
