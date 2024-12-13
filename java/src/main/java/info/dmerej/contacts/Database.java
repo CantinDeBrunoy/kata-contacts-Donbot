@@ -36,7 +36,46 @@ public class Database {
     }
 
     public void insertContacts(Stream<Contact> contacts) {
-        // TODO
+        String query = "INSERT INTO contacts(name, email) VALUES(?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            // Disable auto-commit to insert batch of contacts
+            connection.setAutoCommit(false);
+
+            int batchSize = 10000;
+            int batchCount = 0;
+
+            var iterator = contacts.iterator();
+            while (iterator.hasNext()) {
+                Contact contact = iterator.next();
+                try {
+                    statement.setString(1, contact.name());
+                    statement.setString(2, contact.email());
+                    statement.addBatch();
+                    batchCount++;
+
+                    if (batchCount % batchSize == 0) {
+                        statement.executeBatch();
+                        connection.commit();
+                        batchCount = 0;
+                        System.out.println("Batch of " + batchSize + " contacts inserted.");
+                    }
+                } catch (SQLException e) {
+                    connection.rollback();
+                    throw new RuntimeException("Could not insert contact: " + e.toString());
+                }
+            }
+
+            if (batchCount > 0) {
+                statement.executeBatch();
+                connection.commit();
+                System.out.println("Final batch of " + batchCount + " contacts inserted.");
+            }
+
+            // Enable auto-commit after inserting all contacts
+            connection.setAutoCommit(true);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error preparing statement: " + e.toString());
+        }
     }
 
     public String getContactNameFromEmail(String email) {

@@ -1,17 +1,21 @@
 package info.dmerej.contacts;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class ContactsGenerator {
   public Stream<Contact> generateContacts(int count) {
-    // TODO: generate a *lot* of contacts instead of just 3
-    Contact[] contacts = new Contact[]{
-      new Contact("Alice", "alice@aol.com"),
-      new Contact("Bob", "bob@gmail.com"),
-      new Contact("Eve", "eve@fastmail.com"),
-    };
-    return Arrays.stream(contacts);
+    List<Contact> contacts = new ArrayList<>();
+
+    for (int i = 0; i < count; i++) {
+      String name = "Contact " + (i + 1);
+      String email = "email-" + (i + 1) + "@tld";
+      contacts.add(new Contact(name, email));
+    }
+
+    return contacts.stream();
   }
 }
